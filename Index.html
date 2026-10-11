@@ -1,0 +1,3923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduCam</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+    padding-bottom:80px;
+}
+
+header{
+    background:linear-gradient(135deg,#075e54,#0b8f78);
+    color:white;
+    padding:22px 16px;
+    text-align:center;
+}
+
+header h1{
+    font-size:28px;
+    margin-bottom:6px;
+}
+
+header p{
+    opacity:.9;
+}
+
+.page{
+    display:none;
+    padding:18px;
+}
+
+.page.active{
+    display:block;
+}
+
+h2{
+    margin-bottom:16px;
+}
+
+h3{
+    margin-bottom:8px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card.clickable{
+    cursor:pointer;
+}
+
+.icon{
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.grid .card{
+    margin-bottom:0;
+}
+
+button{
+    border:none;
+    border-radius:10px;
+    padding:12px 15px;
+    background:#087f5b;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+button.secondary{
+    background:#555;
+}
+
+button.danger{
+    background:#c62828;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:12px;
+    margin:7px 0 13px;
+    border:1px solid #ccd3dc;
+    border-radius:9px;
+    font-size:15px;
+    background:white;
+}
+
+textarea{
+    min-height:120px;
+    resize:vertical;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:8px;
+}
+
+.form-box{
+    background:white;
+    padding:17px;
+    border-radius:15px;
+    margin-bottom:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+
+.back{
+    background:#374151;
+    margin-bottom:15px;
+}
+
+.search{
+    margin-bottom:15px;
+}
+
+.course-card{
+    background:white;
+    padding:16px;
+    border-radius:13px;
+    margin-bottom:12px;
+    box-shadow:0 2px 9px rgba(0,0,0,.07);
+}
+
+.document-card,
+.video-card{
+    background:white;
+    padding:15px;
+    border-radius:14px;
+    margin-bottom:14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+
+.document-preview{
+    width:100%;
+    max-height:350px;
+    object-fit:contain;
+    background:#eee;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.video-preview{
+    width:100%;
+    max-height:350px;
+    border-radius:10px;
+    background:#000;
+    margin-bottom:10px;
+}
+
+.price{
+    color:#087f5b;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.small{
+    color:#667085;
+    font-size:13px;
+}
+
+.empty{
+    text-align:center;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    color:#667085;
+}
+
+.admin-title{
+    color:#087f5b;
+    margin-bottom:12px;
+}
+
+.file-info{
+    padding:10px;
+    background:#f1f5f9;
+    border-radius:8px;
+    margin:8px 0;
+    font-size:13px;
+}
+
+.preview-image{
+    width:100%;
+    max-height:250px;
+    object-fit:contain;
+    border-radius:10px;
+    margin-top:8px;
+}
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:68px;
+    background:white;
+    border-top:1px solid #ddd;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    z-index:1000;
+    box-shadow:0 -3px 12px rgba(0,0,0,.08);
+}
+
+.bottom-nav button{
+    margin:0;
+    border-radius:0;
+    background:white;
+    color:#344054;
+    font-size:11px;
+    padding:5px 2px;
+}
+
+.bottom-nav button:hover{
+    background:#eefaf5;
+}
+
+.option-box{
+    background:#f8fafc;
+    padding:10px;
+    border-radius:8px;
+    margin:5px 0;
+}
+
+.hidden{
+    display:none;
+}
+
+.success{
+    color:#087f5b;
+    font-weight:bold;
+}
+
+.error{
+    color:#c62828;
+    font-weight:bold;
+}
+
+@media(max-width:500px){
+    .grid{
+        grid-template-columns:1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 EduCam</h1>
+    <p>La plateforme d'études pour les élèves et étudiants du Cameroun</p>
+</header>
+
+
+<!-- ACCUEIL -->
+<section id="home" class="page active">
+
+    <h2>Bienvenue sur EduCam 👋</h2>
+
+    <div class="grid">
+
+        <div class="card clickable" onclick="showPage('subjects')">
+            <div class="icon">🎓</div>
+            <h3>Collège & Lycée</h3>
+            <p>Cours, exercices et matières scolaires.</p>
+        </div>
+
+        <div class="card clickable" onclick="showPage('universities')">
+            <div class="icon">🏫</div>
+            <h3>Universités</h3>
+            <p>Universités, facultés et filières.</p>
+        </div>
+
+        <div class="card clickable" onclick="showPage('documents')">
+            <div class="icon">📄</div>
+            <h3>Documents</h3>
+            <p>Consulter les documents disponibles.</p>
+        </div>
+
+        <div class="card clickable" onclick="showPage('videos')">
+            <div class="icon">🎥</div>
+            <h3>Vidéos</h3>
+            <p>Apprendre avec des vidéos.</p>
+        </div>
+
+        <!-- ADMIN VISIBLE -->
+        <div class="card clickable" onclick="showPage('admin')">
+            <div class="icon">⚙️</div>
+            <h3>Administration</h3>
+            <p>Ajouter cours, documents et vidéos.</p>
+        </div>
+
+        <div class="card clickable" onclick="showPage('profile')">
+            <div class="icon">👤</div>
+            <h3>Mon profil</h3>
+            <p>Gérer ton profil EduCam.</p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- NIVEAUX -->
+<section id="subjects" class="page">
+    <button class="back" onclick="showPage('home')">← Retour</button>
+    <h2>🎓 Collège & Lycée</h2>
+    <div id="levelsList"></div>
+</section>
+
+
+<!-- MATIERES -->
+<section id="levelSubjects" class="page">
+    <button class="back" onclick="showPage('subjects')">← Retour</button>
+    <h2 id="levelTitle">Matières</h2>
+    <div id="subjectsList"></div>
+</section>
+
+
+<!-- COURS -->
+<section id="courses" class="page">
+    <button class="back" onclick="showPage('levelSubjects')">← Retour</button>
+    <h2 id="subjectTitle">Cours</h2>
+
+    <input
+        class="search"
+        id="courseSearch"
+        placeholder="🔎 Rechercher un cours..."
+        oninput="filterCourses()"
+    >
+
+    <div id="coursesList"></div>
+</section>
+
+
+<!-- DETAIL COURS -->
+<section id="courseDetails" class="page">
+    <button class="back" onclick="showPage('courses')">← Retour</button>
+    <div id="courseDetailsContent"></div>
+</section>
+
+
+<!-- UNIVERSITES -->
+<section id="universities" class="page">
+    <button class="back" onclick="showPage('home')">← Retour</button>
+    <h2>🏫 Universités</h2>
+    <div id="universitiesList"></div>
+</section>
+
+
+<!-- FACULTES -->
+<section id="faculties" class="page">
+    <button class="back" onclick="showPage('universities')">← Retour</button>
+    <h2 id="universityTitle">Facultés</h2>
+    <div id="facultiesList"></div>
+</section>
+
+
+<!-- PROGRAMMES -->
+<section id="universityPrograms" class="page">
+    <button class="back" onclick="showPage('faculties')">← Retour</button>
+    <h2 id="facultyTitle">Filières</h2>
+    <div id="programsList"></div>
+</section>
+
+
+<!-- NIVEAUX UNIVERSITAIRES -->
+<section id="universityLevels" class="page">
+    <button class="back" onclick="showPage('universityPrograms')">← Retour</button>
+    <h2 id="programTitle">Niveaux</h2>
+    <div id="universityLevelsList"></div>
+</section>
+
+
+<!-- COURS UNIVERSITAIRES -->
+<section id="universityCourses" class="page">
+    <button class="back" onclick="showPage('universityLevels')">← Retour</button>
+    <h2 id="universityLevelTitle">Cours universitaires</h2>
+
+    <input
+        class="search"
+        id="universityCourseSearch"
+        placeholder="🔎 Rechercher..."
+        oninput="filterUniversityCourses()"
+    >
+
+    <div id="universityCoursesList"></div>
+</section>
+
+
+<!-- DETAIL COURS UNIVERSITAIRE -->
+<section id="universityCourseDetails" class="page">
+    <button class="back" onclick="showPage('universityCourses')">← Retour</button>
+    <div id="universityCourseDetailsContent"></div>
+</section>
+
+
+<!-- DOCUMENTS -->
+<section id="documents" class="page">
+    <button class="back" onclick="showPage('home')">← Retour</button>
+
+    <h2>📄 Documents</h2>
+
+    <input
+        class="search"
+        id="documentSearch"
+        placeholder="🔎 Rechercher un document..."
+        oninput="filterDocuments()"
+    >
+
+    <div id="documentsList"></div>
+</section>
+
+
+<!-- VIDEOS -->
+<section id="videos" class="page">
+    <button class="back" onclick="showPage('home')">← Retour</button>
+
+    <h2>🎥 Vidéos éducatives</h2>
+
+    <input
+        class="search"
+        id="videoSearch"
+        placeholder="🔎 Rechercher une vidéo..."
+        oninput="filterVideos()"
+    >
+
+    <div id="videosList"></div>
+</section>
+
+
+<!-- PROFIL -->
+<section id="profile" class="page">
+    <button class="back" onclick="showPage('home')">← Retour</button>
+
+    <h2>👤 Mon profil</h2>
+
+    <div class="form-box">
+
+        <label>Nom</label>
+        <input id="profileName" placeholder="Ton nom">
+
+        <label>Prénom</label>
+        <input id="profileFirstName" placeholder="Ton prénom">
+
+        <label>Établissement</label>
+        <input id="profileSchool" placeholder="Ton établissement">
+
+        <label>Niveau</label>
+        <input id="profileLevel" placeholder="Ton niveau">
+
+        <button onclick="saveProfile()">💾 Enregistrer</button>
+
+        <p id="profileMessage"></p>
+
+    </div>
+
+    <div class="card">
+        <h3>Bienvenue sur EduCam</h3>
+        <p>
+            EduCam rassemble les ressources scolaires et universitaires
+            pour faciliter les études.
+        </p>
+    </div>
+</section>
+
+
+<!-- ADMINISTRATION -->
+<section id="admin" class="page">
+
+    <button class="back" onclick="showPage('home')">← Retour</button>
+
+    <h2>⚙️ Administration</h2>
+
+    <!-- AJOUT MATIERE -->
+    <div class="form-box">
+        <h3 class="admin-title">1. Ajouter une matière</h3>
+
+        <label>Niveau</label>
+        <select id="adminSubjectLevel"></select>
+
+        <label>Nom de la matière</label>
+        <input id="adminSubjectName" placeholder="Ex : Informatique">
+
+        <button onclick="addCustomSubject()">
+            ➕ Ajouter la matière
+        </button>
+    </div>
+
+
+    <!-- AJOUT FACULTE -->
+    <div class="form-box">
+        <h3 class="admin-title">2. Ajouter une faculté / école</h3>
+
+        <label>Université</label>
+        <select id="adminFacultyUniversity"></select>
+
+        <label>Nom de la faculté / école</label>
+        <input id="adminFacultyName" placeholder="Ex : Faculté des Sciences">
+
+        <button onclick="addCustomFaculty()">
+            ➕ Ajouter
+        </button>
+    </div>
+
+
+    <!-- AJOUT PROGRAMME -->
+    <div class="form-box">
+        <h3 class="admin-title">3. Ajouter une filière</h3>
+
+        <label>Université</label>
+        <select
+            id="adminProgramUniversity"
+            onchange="updateAdminProgramFaculties()">
+        </select>
+
+        <label>Faculté / École</label>
+        <select id="adminProgramFaculty"></select>
+
+        <label>Nom de la filière</label>
+        <input
+            id="adminProgramName"
+            placeholder="Ex : Informatique"
+        >
+
+        <button onclick="addCustomProgram()">
+            ➕ Ajouter la filière
+        </button>
+    </div>
+
+
+    <!-- COURS COLLEGE LYCEE -->
+    <div class="form-box">
+
+        <h3 class="admin-title">
+            4. Ajouter un cours Collège / Lycée
+        </h3>
+
+        <label>Niveau</label>
+        <select
+            id="adminCourseLevel"
+            onchange="updateAdminCourseSubjects()">
+        </select>
+
+        <label>Matière</label>
+        <select id="adminCourseSubject"></select>
+
+        <label>Titre du cours</label>
+        <input
+            id="adminCourseTitle"
+            placeholder="Titre du cours"
+        >
+
+        <label>Contenu du cours</label>
+        <textarea
+            id="adminCourseContent"
+            placeholder="Ajoute ici ton propre cours..."
+        ></textarea>
+
+        <label>Exercice</label>
+        <textarea
+            id="adminCourseExercise"
+            placeholder="Ajoute ton exercice..."
+        ></textarea>
+
+        <label>Options de réponse</label>
+        <textarea
+            id="adminCourseOptions"
+            placeholder="A. ...&#10;B. ...&#10;C. ...&#10;D. ..."
+        ></textarea>
+
+        <label>Bonne réponse</label>
+        <input
+            id="adminCourseCorrect"
+            placeholder="Ex : B"
+        >
+
+        <label>Document du cours</label>
+        <input
+            type="file"
+            id="adminSchoolFile"
+            accept=".pdf,.doc,.docx,.txt"
+            onchange="handleSchoolFile(this)"
+        >
+
+        <div id="schoolFileInfo"></div>
+
+        <button onclick="saveSchoolCourse()">
+            💾 Enregistrer le cours
+        </button>
+
+    </div>
+
+
+    <!-- COURS UNIVERSITAIRE -->
+    <div class="form-box">
+
+        <h3 class="admin-title">
+            5. Ajouter un cours universitaire
+        </h3>
+
+        <label>Université</label>
+        <select
+            id="adminUniversity"
+            onchange="updateAdminUniversitySelectors()">
+        </select>
+
+        <label>Faculté / École</label>
+        <select
+            id="adminUniversityFaculty"
+            onchange="updateUniversityCourseProgram()">
+        </select>
+
+        <label>Filière</label>
+        <select id="adminUniversityProgram"></select>
+
+        <label>Niveau universitaire</label>
+        <select id="adminUniversityLevel">
+            <option value="Licence 1">Licence 1</option>
+            <option value="Licence 2">Licence 2</option>
+            <option value="Licence 3">Licence 3</option>
+            <option value="Master 1">Master 1</option>
+            <option value="Master 2">Master 2</option>
+            <option value="Doctorat">Doctorat</option>
+        </select>
+
+        <label>Nom du cours</label>
+        <input
+            id="adminUniversityCourseTitle"
+            placeholder="Nom du cours"
+        >
+
+        <label>Contenu</label>
+        <textarea
+            id="adminUniversityCourseContent"
+            placeholder="Ajoute ici ton cours..."
+        ></textarea>
+
+        <label>Document</label>
+        <input
+            type="file"
+            id="adminUniversityFile"
+            accept=".pdf,.doc,.docx,.txt"
+            onchange="handleUniversityFile(this)"
+        >
+
+        <div id="universityFileInfo"></div>
+
+        <button onclick="saveUniversityCourse()">
+            💾 Enregistrer le cours
+        </button>
+
+    </div>
+
+
+    <!-- AJOUT VIDEO -->
+    <div class="form-box">
+
+        <h3 class="admin-title">
+            6. Ajouter une vidéo 🎥
+        </h3>
+
+        <label>Titre de la vidéo</label>
+        <input
+            id="adminVideoTitle"
+            placeholder="Ex : Résolution d'une équation"
+        >
+
+        <label>Description</label>
+        <textarea
+            id="adminVideoDescription"
+            placeholder="Description de la vidéo..."
+        ></textarea>
+
+        <label>Niveau</label>
+        <select
+            id="adminVideoLevel"
+            onchange="updateVideoSelectors()">
+        </select>
+
+        <label>Matière</label>
+        <select id="adminVideoSubject"></select>
+
+        <label>Fichier vidéo</label>
+        <input
+            type="file"
+            id="adminVideoFile"
+            accept="video/*"
+            onchange="handleVideoFile(this)"
+        >
+
+        <div id="videoFileInfo"></div>
+
+        <button onclick="saveVideo()">
+            🎥 Envoyer la vidéo
+        </button>
+
+    </div>
+
+
+    <!-- COURS AJOUTES -->
+    <div class="form-box">
+
+        <h3 class="admin-title">
+            7. Mes cours ajoutés
+        </h3>
+
+        <div id="adminCoursesList"></div>
+
+    </div>
+
+</section>
+
+
+<!-- NAVIGATION -->
+<div class="bottom-nav">
+
+    <button onclick="showPage('home')">
+        🏠<br>Accueil
+    </button>
+
+    <button onclick="showPage('subjects')">
+        📚<br>Cours
+    </button>
+
+    <button onclick="showPage('documents')">
+        📄<br>Docs
+    </button>
+
+    <button onclick="showPage('videos')">
+        🎥<br>Vidéos
+    </button>
+
+    <button onclick="showPage('profile')">
+        👤<br>Profil
+    </button>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://gwycrrquuacwpayvgsrw.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_1wq6F37Sol-IznLU2tkT5g__DRFgOsx";
+
+let supabaseClient = null;
+
+try{
+
+    supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+}catch(error){
+
+    console.error(
+        "Erreur Supabase :",
+        error
+    );
+
+}
+
+
+const DOCUMENT_BUCKET =
+    "educam-documents";
+
+const VIDEO_BUCKET =
+    "educam-videos";
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+const USER_COURSES_KEY =
+    "educam_user_courses";
+
+const CUSTOM_SUBJECTS_KEY =
+    "educam_custom_subjects";
+
+const CUSTOM_STRUCTURE_KEY =
+    "educam_custom_structure";
+
+const PROFILE_KEY =
+    "educam_profile";
+
+
+let selectedSchoolFile = null;
+let selectedUniversityFile = null;
+let selectedVideoFile = null;
+
+
+/* =========================================================
+   DONNEES DE BASE
+========================================================= */
+
+const educamData = {
+
+    levels: {
+
+        "6e":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Histoire",
+            "Géographie",
+            "Sciences",
+            "Informatique"
+        ],
+
+        "5e":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Histoire",
+            "Géographie",
+            "Sciences",
+            "Informatique"
+        ],
+
+        "4e":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Physique",
+            "Chimie",
+            "Histoire",
+            "Géographie",
+            "Informatique"
+        ],
+
+        "3e":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Physique",
+            "Chimie",
+            "Histoire",
+            "Géographie",
+            "Informatique"
+        ],
+
+        "Seconde":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Physique",
+            "Chimie",
+            "Histoire",
+            "Géographie",
+            "Informatique"
+        ],
+
+        "Première":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Physique",
+            "Chimie",
+            "Histoire",
+            "Géographie",
+            "Informatique"
+        ],
+
+        "Terminale":[
+            "Mathématiques",
+            "Français",
+            "Anglais",
+            "Physique",
+            "Chimie",
+            "Histoire",
+            "Géographie",
+            "Informatique"
+        ]
+
+    },
+
+    universities:[
+
+        {
+            name:"Université de Yaoundé I",
+            city:"Yaoundé"
+        },
+
+        {
+            name:"Université de Yaoundé II",
+            city:"Soa"
+        },
+
+        {
+            name:"Université de Douala",
+            city:"Douala"
+        },
+
+        {
+            name:"Université de Dschang",
+            city:"Dschang"
+        },
+
+        {
+            name:"Université de Ngaoundéré",
+            city:"Ngaoundéré"
+        },
+
+        {
+            name:"Université de Buea",
+            city:"Buea"
+        },
+
+        {
+            name:"Université de Bamenda",
+            city:"Bamenda"
+        },
+
+        {
+            name:"Université de Maroua",
+            city:"Maroua"
+        }
+
+    ]
+
+};
+
+
+let currentLevel = "";
+let currentSubject = "";
+let currentUniversity = "";
+let currentFaculty = "";
+let currentProgram = "";
+let currentUniversityLevel = "";
+
+let currentCourses = [];
+let currentUniversityCourses = [];
+let currentVideos = [];
+let currentDocuments = [];
+
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+function getJSON(key, fallback){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(key)
+        ) || fallback;
+
+    }catch(e){
+
+        return fallback;
+
+    }
+
+}
+
+
+function saveJSON(key,value){
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(value)
+    );
+
+}
+
+
+function sanitizeFileName(name){
+
+    return name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-zA-Z0-9._-]/g,"_");
+
+}
+
+
+function formatFileSize(bytes){
+
+    if(!bytes) return "0 octet";
+
+    if(bytes < 1024)
+        return bytes + " octets";
+
+    if(bytes < 1024 * 1024)
+        return (bytes / 1024).toFixed(1) + " Ko";
+
+    if(bytes < 1024 * 1024 * 1024)
+        return (bytes / (1024*1024)).toFixed(1) + " Mo";
+
+    return (bytes / (1024*1024*1024)).toFixed(2) + " Go";
+
+}
+
+
+function escapeHTML(text){
+
+    if(text === undefined || text === null)
+        return "";
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showPage(pageId){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
+            page.classList.remove("active");
+        });
+
+    const page =
+        document.getElementById(pageId);
+
+    if(page){
+        page.classList.add("active");
+    }
+
+    window.scrollTo(0,0);
+
+
+    if(pageId === "subjects")
+        loadLevels();
+
+    if(pageId === "universities")
+        loadUniversitiesHome();
+
+    if(pageId === "documents")
+        loadDocuments();
+
+    if(pageId === "videos")
+        loadVideos();
+
+    if(pageId === "profile")
+        updateProfile();
+
+    if(pageId === "admin")
+        loadAdmin();
+
+}
+
+
+/* =========================================================
+   COLLEGE / LYCEE
+========================================================= */
+
+function getSubjectsForLevel(level){
+
+    const base =
+        educamData.levels[level] || [];
+
+    const custom =
+        getJSON(
+            CUSTOM_SUBJECTS_KEY,
+            {}
+        );
+
+    const customSubjects =
+        custom[level] || [];
+
+    return [
+        ...new Set([
+            ...base,
+            ...customSubjects
+        ])
+    ];
+
+}
+
+
+function loadLevels(){
+
+    const container =
+        document.getElementById(
+            "levelsList"
+        );
+
+    container.innerHTML = "";
+
+    Object.keys(
+        educamData.levels
+    ).forEach(level => {
+
+        container.innerHTML += `
+
+            <div class="card clickable"
+                 onclick="openLevel('${escapeHTML(level)}')">
+
+                <div class="icon">📘</div>
+
+                <h3>${escapeHTML(level)}</h3>
+
+                <p>
+                    ${getSubjectsForLevel(level).length}
+                    matières
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function openLevel(level){
+
+    currentLevel = level;
+
+    document.getElementById(
+        "levelTitle"
+    ).textContent =
+        "📚 " + level;
+
+    loadSubjects();
+
+    showPage("levelSubjects");
+
+}
+
+
+function loadSubjects(){
+
+    const container =
+        document.getElementById(
+            "subjectsList"
+        );
+
+    const subjects =
+        getSubjectsForLevel(
+            currentLevel
+        );
+
+    container.innerHTML = "";
+
+    subjects.forEach(subject => {
+
+        container.innerHTML += `
+
+            <div class="card clickable"
+                 onclick="openSubject('${escapeHTML(subject)}')">
+
+                <div class="icon">📖</div>
+
+                <h3>${escapeHTML(subject)}</h3>
+
+                <p>
+                    Voir les cours
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function openSubject(subject){
+
+    currentSubject = subject;
+
+    document.getElementById(
+        "subjectTitle"
+    ).textContent =
+        currentSubject + " — " + currentLevel;
+
+    loadCoursesForSubject();
+
+    showPage("courses");
+
+}
+
+
+function getAllCourses(){
+
+    return getJSON(
+        USER_COURSES_KEY,
+        []
+    );
+
+}
+
+
+function loadCoursesForSubject(){
+
+    const all =
+        getAllCourses();
+
+    currentCourses =
+        all.filter(course =>
+            course.type === "school" &&
+            course.level === currentLevel &&
+            course.subject === currentSubject
+        );
+
+    renderCourses(
+        currentCourses
+    );
+
+}
+
+
+function renderCourses(courses){
+
+    const container =
+        document.getElementById(
+            "coursesList"
+        );
+
+    if(!courses.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucun cours ajouté pour le moment.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = "";
+
+    courses.forEach((course,index) => {
+
+        container.innerHTML += `
+
+            <div class="course-card">
+
+                <h3>
+                    📘 ${escapeHTML(course.title)}
+                </h3>
+
+                <p class="small">
+                    ${escapeHTML(course.level)}
+                    •
+                    ${escapeHTML(course.subject)}
+                </p>
+
+                ${
+                    course.fileName
+                    ?
+                    `<p class="small">
+                        📄 ${escapeHTML(course.fileName)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                <button
+                    onclick="viewUserCourse('${course.id}')">
+                    👁️ Ouvrir
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function filterCourses(){
+
+    const q =
+        document.getElementById(
+            "courseSearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        currentCourses.filter(course =>
+            (course.title || "")
+                .toLowerCase()
+                .includes(q)
+        );
+
+    renderCourses(filtered);
+
+}
+
+
+function viewUserCourse(id){
+
+    const course =
+        getAllCourses()
+        .find(c =>
+            String(c.id) === String(id)
+        );
+
+    if(!course) return;
+
+    let html = `
+
+        <div class="card">
+
+            <h2>
+                ${escapeHTML(course.title)}
+            </h2>
+
+            <p class="small">
+                ${escapeHTML(course.level)}
+                •
+                ${escapeHTML(course.subject)}
+            </p>
+
+        </div>
+
+    `;
+
+    if(course.content){
+
+        html += `
+
+            <div class="card">
+
+                <h3>📖 Contenu</h3>
+
+                <p style="white-space:pre-wrap">
+                    ${escapeHTML(course.content)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    if(course.exercise){
+
+        html += `
+
+            <div class="card">
+
+                <h3>✏️ Exercice</h3>
+
+                <p style="white-space:pre-wrap">
+                    ${escapeHTML(course.exercise)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    if(course.options){
+
+        html += `
+
+            <div class="card">
+
+                <h3>📝 Options</h3>
+
+                <p style="white-space:pre-wrap">
+                    ${escapeHTML(course.options)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    if(course.correct){
+
+        html += `
+
+            <div class="card">
+
+                <h3>✅ Réponse</h3>
+
+                <p>
+                    ${escapeHTML(course.correct)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    if(course.filePath){
+
+        const url =
+            getPublicFileUrl(
+                DOCUMENT_BUCKET,
+                course.filePath
+            );
+
+        html += `
+
+            <div class="card">
+
+                <h3>📄 Document</h3>
+
+                <p>
+                    ${escapeHTML(course.fileName || "Document")}
+                </p>
+
+                <button
+                    onclick="window.open('${url}','_blank')">
+                    📂 Ouvrir le document
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "courseDetailsContent"
+    ).innerHTML = html;
+
+    showPage("courseDetails");
+
+}
+
+
+/* =========================================================
+   UNIVERSITES
+========================================================= */
+
+function mergeUniversityStructure(){
+
+    const structure =
+        getJSON(
+            CUSTOM_STRUCTURE_KEY,
+            {}
+        );
+
+    return structure;
+
+}
+
+
+function loadUniversitiesHome(){
+
+    const container =
+        document.getElementById(
+            "universitiesList"
+        );
+
+    const structure =
+        mergeUniversityStructure();
+
+    container.innerHTML = "";
+
+    educamData.universities.forEach(
+        (university,index) => {
+
+            const extra =
+                structure[university.name]
+                || {};
+
+            const facultyCount =
+                Object.keys(
+                    extra.faculties || {}
+                ).length;
+
+            container.innerHTML += `
+
+                <div class="card clickable"
+                     onclick="openUniversity('${escapeHTML(university.name)}')">
+
+                    <div class="icon">🏫</div>
+
+                    <h3>
+                        ${escapeHTML(university.name)}
+                    </h3>
+
+                    <p>
+                        📍 ${escapeHTML(university.city)}
+                    </p>
+
+                    <p class="small">
+                        ${facultyCount} faculté(s)/école(s)
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+}
+
+
+function openUniversity(name){
+
+    currentUniversity = name;
+
+    document.getElementById(
+        "universityTitle"
+    ).textContent = name;
+
+    loadFaculties();
+
+    showPage("faculties");
+
+}
+
+
+function loadFaculties(){
+
+    const container =
+        document.getElementById(
+            "facultiesList"
+        );
+
+    const structure =
+        mergeUniversityStructure();
+
+    const data =
+        structure[currentUniversity]
+        || {};
+
+    const faculties =
+        data.faculties || {};
+
+    container.innerHTML = "";
+
+    const names =
+        Object.keys(faculties);
+
+    if(!names.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucune faculté ajoutée pour le moment.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    names.forEach(faculty => {
+
+        container.innerHTML += `
+
+            <div class="card clickable"
+                 onclick="openFaculty('${escapeHTML(faculty)}')">
+
+                <div class="icon">🏛️</div>
+
+                <h3>
+                    ${escapeHTML(faculty)}
+                </h3>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function openFaculty(faculty){
+
+    currentFaculty = faculty;
+
+    document.getElementById(
+        "facultyTitle"
+    ).textContent = faculty;
+
+    loadPrograms();
+
+    showPage("universityPrograms");
+
+}
+
+
+function loadPrograms(){
+
+    const container =
+        document.getElementById(
+            "programsList"
+        );
+
+    const structure =
+        mergeUniversityStructure();
+
+    const faculties =
+        structure[currentUniversity]?.faculties
+        || {};
+
+    const programs =
+        faculties[currentFaculty]?.programs
+        || {};
+
+    container.innerHTML = "";
+
+    const names =
+        Object.keys(programs);
+
+    if(!names.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucune filière ajoutée pour le moment.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    names.forEach(program => {
+
+        container.innerHTML += `
+
+            <div class="card clickable"
+                 onclick="openProgram('${escapeHTML(program)}')">
+
+                <div class="icon">🎓</div>
+
+                <h3>
+                    ${escapeHTML(program)}
+                </h3>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function openProgram(program){
+
+    currentProgram = program;
+
+    document.getElementById(
+        "programTitle"
+    ).textContent = program;
+
+    loadUniversityLevels();
+
+    showPage("universityLevels");
+
+}
+
+
+function loadUniversityLevels(){
+
+    const container =
+        document.getElementById(
+            "universityLevelsList"
+        );
+
+    const levels = [
+        "Licence 1",
+        "Licence 2",
+        "Licence 3",
+        "Master 1",
+        "Master 2",
+        "Doctorat"
+    ];
+
+    container.innerHTML = "";
+
+    levels.forEach(level => {
+
+        container.innerHTML += `
+
+            <div class="card clickable"
+                 onclick="openUniversityLevel('${level}')">
+
+                <div class="icon">📚</div>
+
+                <h3>${level}</h3>
+
+                <p>
+                    Voir les cours
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function openUniversityLevel(level){
+
+    currentUniversityLevel = level;
+
+    document.getElementById(
+        "universityLevelTitle"
+    ).textContent =
+        currentProgram + " — " + level;
+
+    loadUniversityCourses();
+
+    showPage("universityCourses");
+
+}
+
+
+function loadUniversityCourses(){
+
+    const all =
+        getAllCourses();
+
+    currentUniversityCourses =
+        all.filter(course =>
+
+            course.type === "university" &&
+
+            course.university ===
+                currentUniversity &&
+
+            course.faculty ===
+                currentFaculty &&
+
+            course.program ===
+                currentProgram &&
+
+            course.universityLevel ===
+                currentUniversityLevel
+
+        );
+
+    renderUniversityCourses(
+        currentUniversityCourses
+    );
+
+}
+
+
+function renderUniversityCourses(courses){
+
+    const container =
+        document.getElementById(
+            "universityCoursesList"
+        );
+
+    if(!courses.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucun cours ajouté pour ce niveau.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = "";
+
+    courses.forEach(course => {
+
+        container.innerHTML += `
+
+            <div class="course-card">
+
+                <h3>
+                    📘 ${escapeHTML(course.title)}
+                </h3>
+
+                <p class="small">
+                    ${escapeHTML(course.universityLevel)}
+                </p>
+
+                <button
+                    onclick="viewUniversityCourse('${course.id}')">
+                    👁️ Ouvrir
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function filterUniversityCourses(){
+
+    const q =
+        document.getElementById(
+            "universityCourseSearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        currentUniversityCourses.filter(
+            course =>
+                (course.title || "")
+                .toLowerCase()
+                .includes(q)
+        );
+
+    renderUniversityCourses(
+        filtered
+    );
+
+}
+
+
+function viewUniversityCourse(id){
+
+    const course =
+        getAllCourses()
+        .find(c =>
+            String(c.id) === String(id)
+        );
+
+    if(!course) return;
+
+    let html = `
+
+        <div class="card">
+
+            <h2>
+                ${escapeHTML(course.title)}
+            </h2>
+
+            <p>
+                🏫 ${escapeHTML(course.university)}
+            </p>
+
+            <p>
+                🎓 ${escapeHTML(course.program)}
+            </p>
+
+            <p>
+                📚 ${escapeHTML(course.universityLevel)}
+            </p>
+
+        </div>
+
+    `;
+
+    if(course.content){
+
+        html += `
+
+            <div class="card">
+
+                <h3>📖 Contenu</h3>
+
+                <p style="white-space:pre-wrap">
+                    ${escapeHTML(course.content)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    if(course.filePath){
+
+        const url =
+            getPublicFileUrl(
+                DOCUMENT_BUCKET,
+                course.filePath
+            );
+
+        html += `
+
+            <div class="card">
+
+                <h3>📄 Document</h3>
+
+                <button
+                    onclick="window.open('${url}','_blank')">
+                    📂 Ouvrir le document
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "universityCourseDetailsContent"
+    ).innerHTML = html;
+
+    showPage(
+        "universityCourseDetails"
+    );
+
+}
+
+
+/* =========================================================
+   SUPABASE STORAGE
+========================================================= */
+
+async function uploadToSupabase(
+    bucket,
+    folder,
+    file
+){
+
+    if(!supabaseClient){
+
+        throw new Error(
+            "Supabase n'est pas initialisé."
+        );
+
+    }
+
+    if(!file){
+
+        throw new Error(
+            "Aucun fichier sélectionné."
+        );
+
+    }
+
+    const safeName =
+        sanitizeFileName(
+            file.name
+        );
+
+    const uniquePart =
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .substring(2,8);
+
+    const path =
+        folder +
+        "/" +
+        uniquePart +
+        "_" +
+        safeName;
+
+    const result =
+        await supabaseClient
+            .storage
+            .from(bucket)
+            .upload(
+                path,
+                file,
+                {
+                    cacheControl:"3600",
+                    upsert:false,
+                    contentType:
+                        file.type ||
+                        "application/octet-stream"
+                }
+            );
+
+    if(result.error)
+        throw result.error;
+
+    return result.data.path;
+
+}
+
+
+function getPublicFileUrl(
+    bucket,
+    path
+){
+
+    if(!supabaseClient || !path)
+        return "";
+
+    const result =
+        supabaseClient
+            .storage
+            .from(bucket)
+            .getPublicUrl(path);
+
+    return result.data.publicUrl;
+
+}
+
+
+/* =========================================================
+   DOCUMENT ECOLE
+========================================================= */
+
+function handleSchoolFile(input){
+
+    selectedSchoolFile =
+        input.files[0] || null;
+
+    const info =
+        document.getElementById(
+            "schoolFileInfo"
+        );
+
+    if(!selectedSchoolFile){
+
+        info.innerHTML = "";
+
+        return;
+    }
+
+    info.innerHTML = `
+
+        <div class="file-info">
+
+            📄
+            ${escapeHTML(selectedSchoolFile.name)}
+
+            <br>
+
+            Taille :
+            ${formatFileSize(selectedSchoolFile.size)}
+
+        </div>
+
+    `;
+
+}
+
+
+async function saveSchoolCourse(){
+
+    const level =
+        document.getElementById(
+            "adminCourseLevel"
+        ).value;
+
+    const subject =
+        document.getElementById(
+            "adminCourseSubject"
+        ).value;
+
+    const title =
+        document.getElementById(
+            "adminCourseTitle"
+        ).value.trim();
+
+    const content =
+        document.getElementById(
+            "adminCourseContent"
+        ).value.trim();
+
+    const exercise =
+        document.getElementById(
+            "adminCourseExercise"
+        ).value.trim();
+
+    const options =
+        document.getElementById(
+            "adminCourseOptions"
+        ).value.trim();
+
+    const correct =
+        document.getElementById(
+            "adminCourseCorrect"
+        ).value.trim();
+
+
+    if(!level || !subject || !title){
+
+        alert(
+            "Remplis le niveau, la matière et le titre."
+        );
+
+        return;
+
+    }
+
+
+    const id =
+        Date.now().toString();
+
+
+    try{
+
+        let filePath = null;
+        let fileName = null;
+        let fileType = null;
+        let fileSize = null;
+
+
+        if(selectedSchoolFile){
+
+            filePath =
+                await uploadToSupabase(
+                    DOCUMENT_BUCKET,
+                    "school",
+                    selectedSchoolFile
+                );
+
+            fileName =
+                selectedSchoolFile.name;
+
+            fileType =
+                selectedSchoolFile.type;
+
+            fileSize =
+                selectedSchoolFile.size;
+
+        }
+
+
+        const course = {
+
+            id:id,
+
+            type:"school",
+
+            level:level,
+
+            subject:subject,
+
+            title:title,
+
+            content:content,
+
+            exercise:exercise,
+
+            options:options,
+
+            correct:correct,
+
+            fileName:fileName,
+
+            filePath:filePath,
+
+            fileType:fileType,
+
+            fileSize:fileSize,
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        const courses =
+            getAllCourses();
+
+        courses.push(course);
+
+        saveJSON(
+            USER_COURSES_KEY,
+            courses
+        );
+
+
+        if(supabaseClient){
+
+            const {error} =
+                await supabaseClient
+                    .from("courses")
+                    .insert({
+
+                        type:"school",
+
+                        level:level,
+
+                        subject:subject,
+
+                        title:title,
+
+                        content:content,
+
+                        exercise:exercise,
+
+                        options:options,
+
+                        correct:correct,
+
+                        file_name:fileName,
+
+                        file_path:filePath,
+
+                        file_type:fileType,
+
+                        file_size:fileSize
+
+                    });
+
+            if(error)
+                console.warn(
+                    "Erreur DB :",
+                    error
+                );
+
+        }
+
+
+        alert(
+            "✅ Cours enregistré avec succès !"
+        );
+
+
+        document.getElementById(
+            "adminCourseTitle"
+        ).value = "";
+
+        document.getElementById(
+            "adminCourseContent"
+        ).value = "";
+
+        document.getElementById(
+            "adminCourseExercise"
+        ).value = "";
+
+        document.getElementById(
+            "adminCourseOptions"
+        ).value = "";
+
+        document.getElementById(
+            "adminCourseCorrect"
+        ).value = "";
+
+        document.getElementById(
+            "adminSchoolFile"
+        ).value = "";
+
+        document.getElementById(
+            "schoolFileInfo"
+        ).innerHTML = "";
+
+        selectedSchoolFile = null;
+
+        loadAdminCourses();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Erreur : " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DOCUMENT UNIVERSITAIRE
+========================================================= */
+
+function handleUniversityFile(input){
+
+    selectedUniversityFile =
+        input.files[0] || null;
+
+    const info =
+        document.getElementById(
+            "universityFileInfo"
+        );
+
+    if(!selectedUniversityFile){
+
+        info.innerHTML = "";
+
+        return;
+    }
+
+    info.innerHTML = `
+
+        <div class="file-info">
+
+            📄
+            ${escapeHTML(selectedUniversityFile.name)}
+
+            <br>
+
+            Taille :
+            ${formatFileSize(
+                selectedUniversityFile.size
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+async function saveUniversityCourse(){
+
+    const university =
+        document.getElementById(
+            "adminUniversity"
+        ).value;
+
+    const faculty =
+        document.getElementById(
+            "adminUniversityFaculty"
+        ).value;
+
+    const program =
+        document.getElementById(
+            "adminUniversityProgram"
+        ).value;
+
+    const universityLevel =
+        document.getElementById(
+            "adminUniversityLevel"
+        ).value;
+
+    const title =
+        document.getElementById(
+            "adminUniversityCourseTitle"
+        ).value.trim();
+
+    const content =
+        document.getElementById(
+            "adminUniversityCourseContent"
+        ).value.trim();
+
+
+    if(
+        !university ||
+        !faculty ||
+        !program ||
+        !universityLevel ||
+        !title
+    ){
+
+        alert(
+            "Remplis tous les champs obligatoires."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        let filePath = null;
+        let fileName = null;
+        let fileType = null;
+        let fileSize = null;
+
+
+        if(selectedUniversityFile){
+
+            filePath =
+                await uploadToSupabase(
+                    DOCUMENT_BUCKET,
+                    "university",
+                    selectedUniversityFile
+                );
+
+            fileName =
+                selectedUniversityFile.name;
+
+            fileType =
+                selectedUniversityFile.type;
+
+            fileSize =
+                selectedUniversityFile.size;
+
+        }
+
+
+        const course = {
+
+            id:
+                Date.now().toString(),
+
+            type:"university",
+
+            university:university,
+
+            faculty:faculty,
+
+            program:program,
+
+            universityLevel:
+                universityLevel,
+
+            title:title,
+
+            content:content,
+
+            fileName:fileName,
+
+            filePath:filePath,
+
+            fileType:fileType,
+
+            fileSize:fileSize,
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        const courses =
+            getAllCourses();
+
+        courses.push(course);
+
+        saveJSON(
+            USER_COURSES_KEY,
+            courses
+        );
+
+
+        if(supabaseClient){
+
+            const {error} =
+                await supabaseClient
+                    .from("courses")
+                    .insert({
+
+                        type:"university",
+
+                        university:university,
+
+                        faculty:faculty,
+
+                        program:program,
+
+                        university_level:
+                            universityLevel,
+
+                        title:title,
+
+                        content:content,
+
+                        file_name:fileName,
+
+                        file_path:filePath,
+
+                        file_type:fileType,
+
+                        file_size:fileSize
+
+                    });
+
+            if(error)
+                console.warn(
+                    "Erreur DB :",
+                    error
+                );
+
+        }
+
+
+        alert(
+            "✅ Cours universitaire enregistré !"
+        );
+
+
+        document.getElementById(
+            "adminUniversityCourseTitle"
+        ).value = "";
+
+        document.getElementById(
+            "adminUniversityCourseContent"
+        ).value = "";
+
+        document.getElementById(
+            "adminUniversityFile"
+        ).value = "";
+
+        document.getElementById(
+            "universityFileInfo"
+        ).innerHTML = "";
+
+        selectedUniversityFile = null;
+
+        loadAdminCourses();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Erreur : " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   VIDEOS
+========================================================= */
+
+function handleVideoFile(input){
+
+    selectedVideoFile =
+        input.files[0] || null;
+
+    const info =
+        document.getElementById(
+            "videoFileInfo"
+        );
+
+    if(!selectedVideoFile){
+
+        info.innerHTML = "";
+
+        return;
+    }
+
+    info.innerHTML = `
+
+        <div class="file-info">
+
+            🎥
+            ${escapeHTML(selectedVideoFile.name)}
+
+            <br>
+
+            Taille :
+            ${formatFileSize(
+                selectedVideoFile.size
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+async function saveVideo(){
+
+    const title =
+        document.getElementById(
+            "adminVideoTitle"
+        ).value.trim();
+
+    const description =
+        document.getElementById(
+            "adminVideoDescription"
+        ).value.trim();
+
+    const level =
+        document.getElementById(
+            "adminVideoLevel"
+        ).value;
+
+    const subject =
+        document.getElementById(
+            "adminVideoSubject"
+        ).value;
+
+
+    if(!title || !selectedVideoFile){
+
+        alert(
+            "Ajoute un titre et sélectionne une vidéo."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const filePath =
+            await uploadToSupabase(
+                VIDEO_BUCKET,
+                "videos",
+                selectedVideoFile
+            );
+
+
+        if(!supabaseClient){
+
+            alert(
+                "Supabase n'est pas disponible."
+            );
+
+            return;
+
+        }
+
+
+        const {error} =
+            await supabaseClient
+                .from("videos")
+                .insert({
+
+                    title:title,
+
+                    description:description,
+
+                    level:level,
+
+                    subject:subject,
+
+                    file_name:
+                        selectedVideoFile.name,
+
+                    file_path:filePath,
+
+                    file_type:
+                        selectedVideoFile.type,
+
+                    file_size:
+                        selectedVideoFile.size
+
+                });
+
+
+        if(error){
+
+            await supabaseClient
+                .storage
+                .from(VIDEO_BUCKET)
+                .remove([filePath]);
+
+            throw error;
+
+        }
+
+
+        alert(
+            "✅ Vidéo ajoutée avec succès !"
+        );
+
+
+        document.getElementById(
+            "adminVideoTitle"
+        ).value = "";
+
+        document.getElementById(
+            "adminVideoDescription"
+        ).value = "";
+
+        document.getElementById(
+            "adminVideoFile"
+        ).value = "";
+
+        document.getElementById(
+            "videoFileInfo"
+        ).innerHTML = "";
+
+        selectedVideoFile = null;
+
+        loadVideos();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Erreur vidéo : " +
+            error.message
+        );
+
+    }
+
+}
+
+
+async function loadVideos(){
+
+    const container =
+        document.getElementById(
+            "videosList"
+        );
+
+    container.innerHTML = `
+        <div class="empty">
+            Chargement des vidéos...
+        </div>
+    `;
+
+
+    if(!supabaseClient){
+
+        container.innerHTML = `
+            <div class="empty">
+                Supabase n'est pas disponible.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const {data,error} =
+        await supabaseClient
+            .from("videos")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(error){
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="empty">
+                Impossible de charger les vidéos.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    currentVideos =
+        data || [];
+
+    renderVideos(
+        currentVideos
+    );
+
+}
+
+
+function renderVideos(videos){
+
+    const container =
+        document.getElementById(
+            "videosList"
+        );
+
+    if(!videos.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucune vidéo disponible pour le moment.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    videos.forEach(video => {
+
+        const url =
+            getPublicFileUrl(
+                VIDEO_BUCKET,
+                video.file_path
+            );
+
+
+        container.innerHTML += `
+
+            <div class="video-card">
+
+                <video
+                    class="video-preview"
+                    controls
+                    preload="metadata"
+                    src="${url}">
+                </video>
+
+                <h3>
+                    🎥 ${escapeHTML(video.title)}
+                </h3>
+
+                <p class="small">
+                    ${escapeHTML(video.level || "")}
+                    ${
+                        video.subject
+                        ?
+                        " • " +
+                        escapeHTML(video.subject)
+                        :
+                        ""
+                    }
+                </p>
+
+                ${
+                    video.description
+                    ?
+                    `<p>
+                        ${escapeHTML(video.description)}
+                    </p>`
+                    :
+                    ""
+                }
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function filterVideos(){
+
+    const q =
+        document.getElementById(
+            "videoSearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        currentVideos.filter(video =>
+
+            (video.title || "")
+                .toLowerCase()
+                .includes(q)
+
+            ||
+
+            (video.description || "")
+                .toLowerCase()
+                .includes(q)
+
+        );
+
+    renderVideos(filtered);
+
+}
+
+
+/* =========================================================
+   DOCUMENTS
+========================================================= */
+
+async function loadDocuments(){
+
+    const container =
+        document.getElementById(
+            "documentsList"
+        );
+
+    container.innerHTML = `
+        <div class="empty">
+            Chargement des documents...
+        </div>
+    `;
+
+
+    if(!supabaseClient){
+
+        container.innerHTML = `
+            <div class="empty">
+                Supabase n'est pas disponible.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const {data,error} =
+        await supabaseClient
+            .from("courses")
+            .select("*")
+            .not(
+                "file_path",
+                "is",
+                null
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(error){
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="empty">
+                Impossible de charger les documents.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    currentDocuments =
+        data || [];
+
+    renderDocuments(
+        currentDocuments
+    );
+
+}
+
+
+function renderDocuments(documents){
+
+    const container =
+        document.getElementById(
+            "documentsList"
+        );
+
+    if(!documents.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucun document disponible.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    documents.forEach(doc => {
+
+        const url =
+            getPublicFileUrl(
+                DOCUMENT_BUCKET,
+                doc.file_path
+            );
+
+
+        let preview = "";
+
+
+        if(
+            doc.file_type &&
+            doc.file_type.startsWith("image/")
+        ){
+
+            preview = `
+                <img
+                    class="document-preview"
+                    src="${url}">
+            `;
+
+        }
+
+
+        container.innerHTML += `
+
+            <div class="document-card">
+
+                ${preview}
+
+                <h3>
+                    📄
+                    ${escapeHTML(
+                        doc.file_name ||
+                        doc.title ||
+                        "Document"
+                    )}
+                </h3>
+
+                ${
+                    doc.title
+                    ?
+                    `<p>
+                        ${escapeHTML(doc.title)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                ${
+                    doc.level
+                    ?
+                    `<p class="small">
+                        Niveau :
+                        ${escapeHTML(doc.level)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                ${
+                    doc.subject
+                    ?
+                    `<p class="small">
+                        Matière :
+                        ${escapeHTML(doc.subject)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                <button
+                    onclick="window.open('${url}','_blank')">
+                    📂 Ouvrir
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function filterDocuments(){
+
+    const q =
+        document.getElementById(
+            "documentSearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        currentDocuments.filter(doc =>
+
+            (doc.file_name || "")
+                .toLowerCase()
+                .includes(q)
+
+            ||
+
+            (doc.title || "")
+                .toLowerCase()
+                .includes(q)
+
+            ||
+
+            (doc.subject || "")
+                .toLowerCase()
+                .includes(q)
+
+        );
+
+    renderDocuments(filtered);
+
+}
+
+
+/* =========================================================
+   MATIERES PERSONNALISEES
+========================================================= */
+
+function addCustomSubject(){
+
+    const level =
+        document.getElementById(
+            "adminSubjectLevel"
+        ).value;
+
+    const name =
+        document.getElementById(
+            "adminSubjectName"
+        ).value.trim();
+
+
+    if(!level || !name){
+
+        alert(
+            "Choisis un niveau et indique le nom de la matière."
+        );
+
+        return;
+
+    }
+
+
+    const custom =
+        getJSON(
+            CUSTOM_SUBJECTS_KEY,
+            {}
+        );
+
+
+    if(!custom[level])
+        custom[level] = [];
+
+
+    if(
+        !custom[level].includes(name)
+    ){
+
+        custom[level].push(name);
+
+    }
+
+
+    saveJSON(
+        CUSTOM_SUBJECTS_KEY,
+        custom
+    );
+
+
+    document.getElementById(
+        "adminSubjectName"
+    ).value = "";
+
+
+    alert(
+        "✅ Matière ajoutée."
+    );
+
+
+    updateAdminCourseSubjects();
+
+}
+
+
+/* =========================================================
+   STRUCTURE UNIVERSITAIRE
+========================================================= */
+
+function addCustomFaculty(){
+
+    const university =
+        document.getElementById(
+            "adminFacultyUniversity"
+        ).value;
+
+    const faculty =
+        document.getElementById(
+            "adminFacultyName"
+        ).value.trim();
+
+
+    if(!university || !faculty){
+
+        alert(
+            "Choisis une université et indique le nom."
+        );
+
+        return;
+
+    }
+
+
+    const structure =
+        getJSON(
+            CUSTOM_STRUCTURE_KEY,
+            {}
+        );
+
+
+    if(!structure[university])
+        structure[university] = {
+            faculties:{}
+        };
+
+
+    if(!structure[university].faculties)
+        structure[university].faculties = {};
+
+
+    if(
+        !structure[university]
+            .faculties[faculty]
+    ){
+
+        structure[university]
+            .faculties[faculty] = {
+                programs:{}
+            };
+
+    }
+
+
+    saveJSON(
+        CUSTOM_STRUCTURE_KEY,
+        structure
+    );
+
+
+    document.getElementById(
+        "adminFacultyName"
+    ).value = "";
+
+
+    alert(
+        "✅ Faculté / école ajoutée."
+    );
+
+
+    loadAdmin();
+
+}
+
+
+function addCustomProgram(){
+
+    const university =
+        document.getElementById(
+            "adminProgramUniversity"
+        ).value;
+
+    const faculty =
+        document.getElementById(
+            "adminProgramFaculty"
+        ).value;
+
+    const program =
+        document.getElementById(
+            "adminProgramName"
+        ).value.trim();
+
+
+    if(
+        !university ||
+        !faculty ||
+        !program
+    ){
+
+        alert(
+            "Remplis tous les champs."
+        );
+
+        return;
+
+    }
+
+
+    const structure =
+        getJSON(
+            CUSTOM_STRUCTURE_KEY,
+            {}
+        );
+
+
+    if(!structure[university])
+        structure[university] = {
+            faculties:{}
+        };
+
+
+    if(!structure[university].faculties)
+        structure[university].faculties = {};
+
+
+    if(
+        !structure[university]
+            .faculties[faculty]
+    ){
+
+        structure[university]
+            .faculties[faculty] = {
+                programs:{}
+            };
+
+    }
+
+
+    if(
+        !structure[university]
+            .faculties[faculty]
+            .programs
+    ){
+
+        structure[university]
+            .faculties[faculty]
+            .programs = {};
+
+    }
+
+
+    structure[university]
+        .faculties[faculty]
+        .programs[program] = true;
+
+
+    saveJSON(
+        CUSTOM_STRUCTURE_KEY,
+        structure
+    );
+
+
+    document.getElementById(
+        "adminProgramName"
+    ).value = "";
+
+
+    alert(
+        "✅ Filière ajoutée."
+    );
+
+
+    loadAdmin();
+
+}
+
+
+/* =========================================================
+   ADMIN SELECTEURS
+========================================================= */
+
+function updateAdminSelectors(){
+
+    const levels =
+        Object.keys(
+            educamData.levels
+        );
+
+
+    const levelSelect =
+        document.getElementById(
+            "adminSubjectLevel"
+        );
+
+    const courseLevel =
+        document.getElementById(
+            "adminCourseLevel"
+        );
+
+    const videoLevel =
+        document.getElementById(
+            "adminVideoLevel"
+        );
+
+
+    levelSelect.innerHTML = "";
+
+    courseLevel.innerHTML = "";
+
+    videoLevel.innerHTML = "";
+
+
+    levels.forEach(level => {
+
+        levelSelect.innerHTML += `
+            <option value="${escapeHTML(level)}">
+                ${escapeHTML(level)}
+            </option>
+        `;
+
+        courseLevel.innerHTML += `
+            <option value="${escapeHTML(level)}">
+                ${escapeHTML(level)}
+            </option>
+        `;
+
+        videoLevel.innerHTML += `
+            <option value="${escapeHTML(level)}">
+                ${escapeHTML(level)}
+            </option>
+        `;
+
+    });
+
+}
+
+
+function updateAdminCourseSubjects(){
+
+    const level =
+        document.getElementById(
+            "adminCourseLevel"
+        ).value;
+
+    const select =
+        document.getElementById(
+            "adminCourseSubject"
+        );
+
+
+    select.innerHTML = "";
+
+
+    getSubjectsForLevel(level)
+        .forEach(subject => {
+
+            select.innerHTML += `
+
+                <option value="${escapeHTML(subject)}">
+                    ${escapeHTML(subject)}
+                </option>
+
+            `;
+
+        });
+
+}
+
+
+function updateAdminUniversitySelectors(){
+
+    const university =
+        document.getElementById(
+            "adminUniversity"
+        ).value;
+
+    const facultySelect =
+        document.getElementById(
+            "adminUniversityFaculty"
+        );
+
+
+    const structure =
+        mergeUniversityStructure();
+
+
+    const faculties =
+        structure[university]
+            ?.faculties || {};
+
+
+    facultySelect.innerHTML = "";
+
+
+    Object.keys(faculties)
+        .forEach(faculty => {
+
+            facultySelect.innerHTML += `
+
+                <option value="${escapeHTML(faculty)}">
+                    ${escapeHTML(faculty)}
+                </option>
+
+            `;
+
+        });
+
+
+    updateUniversityCourseProgram();
+
+}
+
+
+function updateAdminProgramFaculties(){
+
+    const university =
+        document.getElementById(
+            "adminProgramUniversity"
+        ).value;
+
+    const facultySelect =
+        document.getElementById(
+            "adminProgramFaculty"
+        );
+
+
+    const structure =
+        mergeUniversityStructure();
+
+
+    const faculties =
+        structure[university]
+            ?.faculties || {};
+
+
+    facultySelect.innerHTML = "";
+
+
+    Object.keys(faculties)
+        .forEach(faculty => {
+
+            facultySelect.innerHTML += `
+
+                <option value="${escapeHTML(faculty)}">
+                    ${escapeHTML(faculty)}
+                </option>
+
+            `;
+
+        });
+
+}
+
+
+function updateUniversityCourseFaculty(){
+
+    updateAdminUniversitySelectors();
+
+}
+
+
+function updateUniversityCourseProgram(){
+
+    const university =
+        document.getElementById(
+            "adminUniversity"
+        ).value;
+
+    const faculty =
+        document.getElementById(
+            "adminUniversityFaculty"
+        ).value;
+
+    const programSelect =
+        document.getElementById(
+            "adminUniversityProgram"
+        );
+
+
+    const structure =
+        mergeUniversityStructure();
+
+
+    const programs =
+        structure[university]
+            ?.faculties
+            ?. [faculty]
+            ?.programs || {};
+
+
+    programSelect.innerHTML = "";
+
+
+    Object.keys(programs)
+        .forEach(program => {
+
+            programSelect.innerHTML += `
+
+                <option value="${escapeHTML(program)}">
+                    ${escapeHTML(program)}
+                </option>
+
+            `;
+
+        });
+
+}
+
+
+function updateUniversityCourseLevels(){
+
+    const select =
+        document.getElementById(
+            "adminUniversityLevel"
+        );
+
+    if(!select.value)
+        select.value = "Licence 1";
+
+}
+
+
+function updateVideoSelectors(){
+
+    const level =
+        document.getElementById(
+            "adminVideoLevel"
+        ).value;
+
+    const subjectSelect =
+        document.getElementById(
+            "adminVideoSubject"
+        );
+
+
+    subjectSelect.innerHTML = "";
+
+
+    getSubjectsForLevel(level)
+        .forEach(subject => {
+
+            subjectSelect.innerHTML += `
+
+                <option value="${escapeHTML(subject)}">
+                    ${escapeHTML(subject)}
+                </option>
+
+            `;
+
+        });
+
+}
+
+
+/* =========================================================
+   ADMIN - COURS AJOUTES
+========================================================= */
+
+function loadAdminCourses(){
+
+    const container =
+        document.getElementById(
+            "adminCoursesList"
+        );
+
+    const courses =
+        getAllCourses();
+
+
+    if(!courses.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucun cours ajouté.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    courses
+        .slice()
+        .reverse()
+        .forEach(course => {
+
+            container.innerHTML += `
+
+                <div class="course-card">
+
+                    <h3>
+                        ${escapeHTML(course.title)}
+                    </h3>
+
+                    <p class="small">
+
+                        ${
+                            course.type === "school"
+                            ?
+                            escapeHTML(course.level)
+                            + " • "
+                            + escapeHTML(course.subject)
+                            :
+                            escapeHTML(course.university)
+                            + " • "
+                            + escapeHTML(course.program)
+                        }
+
+                    </p>
+
+                    <button
+                        class="danger"
+                        onclick="deleteCourse('${course.id}')">
+                        🗑️ Supprimer
+                    </button>
+
+                </div>
+
+            `;
+
+        });
+
+}
+
+
+async function deleteCourse(id){
+
+    if(
+        !confirm(
+            "Supprimer ce cours ?"
+        )
+    )
+        return;
+
+
+    const courses =
+        getAllCourses();
+
+
+    const course =
+        courses.find(
+            c =>
+                String(c.id) ===
+                String(id)
+        );
+
+
+    if(
+        course &&
+        course.filePath &&
+        supabaseClient
+    ){
+
+        try{
+
+            await supabaseClient
+                .storage
+                .from(DOCUMENT_BUCKET)
+                .remove([
+                    course.filePath
+                ]);
+
+        }catch(e){
+
+            console.warn(e);
+
+        }
+
+    }
+
+
+    const filtered =
+        courses.filter(
+            c =>
+                String(c.id) !==
+                String(id)
+        );
+
+
+    saveJSON(
+        USER_COURSES_KEY,
+        filtered
+    );
+
+
+    if(
+        supabaseClient &&
+        course
+    ){
+
+        try{
+
+            await supabaseClient
+                .from("courses")
+                .delete()
+                .eq(
+                    "title",
+                    course.title
+                );
+
+        }catch(e){
+
+            console.warn(e);
+
+        }
+
+    }
+
+
+    loadAdminCourses();
+
+}
+
+
+/* =========================================================
+   PROFIL
+========================================================= */
+
+function saveProfile(){
+
+    const profile = {
+
+        name:
+            document.getElementById(
+                "profileName"
+            ).value.trim(),
+
+        firstName:
+            document.getElementById(
+                "profileFirstName"
+            ).value.trim(),
+
+        school:
+            document.getElementById(
+                "profileSchool"
+            ).value.trim(),
+
+        level:
+            document.getElementById(
+                "profileLevel"
+            ).value.trim()
+
+    };
+
+
+    saveJSON(
+        PROFILE_KEY,
+        profile
+    );
+
+
+    document.getElementById(
+        "profileMessage"
+    ).innerHTML = `
+        <span class="success">
+            ✅ Profil enregistré.
+        </span>
+    `;
+
+}
+
+
+function updateProfile(){
+
+    const profile =
+        getJSON(
+            PROFILE_KEY,
+            {}
+        );
+
+
+    document.getElementById(
+        "profileName"
+    ).value =
+        profile.name || "";
+
+
+    document.getElementById(
+        "profileFirstName"
+    ).value =
+        profile.firstName || "";
+
+
+    document.getElementById(
+        "profileSchool"
+    ).value =
+        profile.school || "";
+
+
+    document.getElementById(
+        "profileLevel"
+    ).value =
+        profile.level || "";
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function loadAdmin(){
+
+    updateAdminSelectors();
+
+    updateAdminCourseSubjects();
+
+    updateAdminUniversitySelectors();
+
+    updateAdminProgramFaculties();
+
+    updateVideoSelectors();
+
+    loadAdminCourses();
+
+}
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+function initializeEduCam(){
+
+    loadLevels();
+
+    loadUniversitiesHome();
+
+    updateProfile();
+
+}
+
+
+initializeEduCam();
+
+</script>
+
+</body>
+</html>
